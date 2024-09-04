@@ -10,9 +10,10 @@ class Parser:
     def __init__(self):
         self.raw = None # json data from which to compose the ads
         self.map = None
-        self.ast = ASTNode(-1, 'root', 'Root node') # root node of the AST
-
-        self.comment_buffer = None
+        self.ast = None # root node of the AST
+        self.lastNode = None
+        self.commentBuffer = None
+        self.propertyBuffer = None
 
     def load(self, path):
         '''
@@ -30,166 +31,114 @@ class Parser:
         self.raw = self.load(path)
         self.map = self.load(map)
         self.parse_node(self.raw[0], self.ast)
-        self.print_ast()
+        # self.print_ast()
     
     def _get_comment(self):
-        result = self.comment_buffer
-        self.comment_buffer = None
+        result = self.commentBuffer
+        self.commentBuffer = None
         return result
+    
+    def create_node(self, type, parent:ASTNode=None):
+        return ASTNode(parent, type)
+    def create_property(self, key, value, parent:ASTNode=None):
+        return Property(key, value, parent)
+    
+    # Buffer Management
+    def register_key(self, key: str, parent:ASTNode=None):
+        self.propertyBuffer = self.create_property(key, None, parent)
+    def register_value(self, value, parent:ASTNode=None):
+        if self.propertyBuffer:
+            self.propertyBuffer.value = value
+            parent.add_property(self.propertyBuffer)
+            self.propertyBuffer = None
+        else:
+            print('\u001b[31m' + 'Error: No property buffer found.' + '\u001b[0m')
+            exit(1)
+    def register_comment(self, parent:ASTNode, comment):
+        parent.description = comment
 
     def parse_node(self, data, parent:ASTNode=None, d=0):
         '''
         Recursively parse a node and its children.
         '''
-        new_node = ASTNode(parent=parent) # Note to self: if you dont explicitly set parent=parent (instead of just parent) it gets very unhappy.
-        node_type = None
-        print(data)
-        if isinstance(data, dict):
-            # Check if there are multiple members
-            if NAME in data:
-                parent.name = data.get(NAME)
-            if DATA in data:
-                print(f'DATA: {data.get(DATA)} - {parent}')
-                for member in data.get(DATA):
-                    if member == NAME:
-                        parent.name = data.get(DATA).get(NAME)
-                    else:
-                        self.parse_node(data.get(DATA).get(member), parent, d)
-            elif MEMBERS in data:
-                for member in data.get(MEMBERS):
-                    self.parse_node(member, parent, d)
-            elif NODE in data:
-                print(f'NODE: {data.get(NODE)} - {parent}')
-                self.parse_node(data[NODE], parent, d) # If we are a node lets just pass the data and not register ourselfs
-            elif GENERAL in data:
-                for member in data.get(GENERAL):
-                    if member == NAME:
-                        parent.name = data.get(GENERAL).get(NAME)
-                    elif member == SIZE:
-                        parent.size = data.get(GENERAL).get(SIZE)
-                    else:
-                        self.parse_node(data[GENERAL].get(member), parent, d)
-            elif SPECIAL in data:
-                for member in data.get(SPECIAL):
-                    if member == NAME:
-                        parent.name = data.get(SPECIAL).get(NAME)
-                    elif member == INPUTKIND:
-                        parent.kind = INPUTKIND
-                    elif member == PRIORITY:
-                        parent.priority = data.get(SPECIAL).get(PRIORITY)
-                    elif member == QUEUEFULL:
-                        parent.queueBehavior = data.get(SPECIAL).get(QUEUEFULL)
-                    else:
-                        self.parse_node(data.get(SPECIAL).get(member), parent, d)
-            elif KIND in data:
-                self.parse_node(data.get(KIND), parent, d)
-            elif INPUTKIND in data:
-                parent.kind = INPUTKIND
-            elif ASTNODE in data:
-                # print(f'ASTNODE: {data.get(ASTNODE)}')
-                for member in data[ASTNODE]:
-                    print(f'MEMBER: {member}')
-                    if member == NAME:
-                        parent.name = data[ASTNODE].get(NAME)
-                    if member == ID:
-                        parent.id = data[ASTNODE].get(ID)
-                        line, column = self.map.get(str(parent.id)).get('pos').split('.')
-                        parent.line = line
-                        parent.column = column
-                        parent.src_file = self.map.get(str(parent.id)).get('file')
-                    else:
-                        self.parse_node(data.get(ASTNODE).get(member), parent, d)
-            elif SIZE in data:
-                parent.size = data.get(SIZE)
-            elif PRIORITY in data:
-                parent.priority = data.get(PRIORITY)
-            elif SOME in data:
-                for member in data[SOME]:
-                    self.parse_node(data[SOME].get(member), parent, d)
-            elif UNQUALIFIED in data:
-                for member in data[UNQUALIFIED]:
-                    if member == NAME:
-                        parent.kind = data[UNQUALIFIED].get(NAME)
-            elif QUEUEFULL in data:
-                parent.queueBehavior = QUEUEFULL
-            elif ABSTRACT_TYPE in data:
-                parent.type = ABSTRACT_TYPE
-            elif COMPONENT in data:
-                iprint(d, "[NEW COMPONENT]")
-                new_node.type = COMPONENT
-                parent.add_child(new_node)
-                new_node.description = self._get_comment()
-                self.parse_node(data[COMPONENT], new_node, d+1)
-            elif MODULE in data:
-                iprint(d, "[NEW MODULE]")
-                new_node.type = MODULE
-                parent.add_child(new_node)
-                new_node.description = self._get_comment()
-                self.parse_node(data[MODULE], new_node, d+1)
-            elif PORT in data:
-                for member in data[PORT]:
-                    new_node.type = PORT
-                    parent.add_child(new_node)
-                    new_node.description = self._get_comment()
-                    self.parse_node(data[PORT].get(member), parent, d)
-            elif SPECPORT in data:
-                # iprint(d, "[NEW SPECPORT]")
-                new_node.type = SPECPORT
-                parent.add_child(new_node)
-                new_node.description = self._get_comment()
-                self.parse_node(data[SPECPORT], new_node, d+1)
-            elif EVENTSPEC in data:
-                new_node.type = EVENTSPEC
-                parent.add_child(new_node)
-                new_node.description = self._get_comment()
-                self.parse_node(data[EVENTSPEC], new_node, d+1)
-            elif TELEMCHSPEC in data:
-                new_node.type = TELEMCHSPEC
-                parent.add_child(new_node)
-                new_node.description = self._get_comment()
-                self.parse_node(data[TELEMCHSPEC], new_node, d+1)
-            elif COMMANDSPEC in data:
-                new_node.type = COMMANDSPEC
-                parent.add_child(new_node)
-                new_node.description = self._get_comment()
-                self.parse_node(data[COMMANDSPEC], new_node, d+1)
-            elif OUTPUT in data:
-                parent.kind = OUTPUT
-            elif ENUM in data:
-                parent.type = ENUM
-            elif ASYNCINPUT in data:
-                parent.type = ASYNCINPUT
-            elif COMMANDRECV in data:
-                parent.type = COMMANDRECV
-            elif COMMANDREG in data:
-                parent.type = COMMANDREG
-            elif COMMANDRESP in data:
-                parent.type = COMMANDRESP
-            elif EVENT in data:
-                parent.type = EVENT
-            elif TELEMETRY in data:
-                parent.type = TELEMETRY
-            elif TEXTEVENT in data:
-                parent.type = TEXTEVENT
-            elif TIMEGET in data:
-                parent.type = TIMEGET
-            elif ASYNC in data:
-                parent.type = ASYNC
-            # This next bit works for now but is not a good long term solution
-            if node_type:
-                new_node.type = node_type
-                parent.add_child(new_node)
-                new_node.description = self._get_comment()
-                self.parse_node(data[node_type], new_node, d)
-                iprint(d, str(new_node))
-        elif isinstance(data, list):
-            for member in data:
-                # Check to see if the member is just a string, if so it is a comment that we need to add to the comment buffer
-                if isinstance(member, str):
-                    print(f'Comment: {member}')
-                    self.comment_buffer = member
-                else:
-                    self.parse_node(member, parent, d)
+        input()
+        # Did we get any data?
+        if not data:
+            iprint(d, 'No data found.')
+            return
+
+        # Is this a string?
+        # Let's keep this seperate from the integers because we want to capture comments.
+        if isinstance(data, str):
+            if self.propertyBuffer:
+                self.register_value(data, parent)
+                iprint(d, f'Added property: \u001b[34m{data}\u001b[0m to {parent}')
+            else:
+                self.register_comment(parent, data)
+                iprint(d, f'Added comment: "\u001b[36m{data}\u001b[0m" to {parent}')
+            return
+        
+        # Is this an integer?
+        if isinstance(data, int):
+            iprint(d, f'Found Integer: {data}')
+            return
+
+        # Is this a list? If so lets go ahead and parse each element.
+        if isinstance(data, list):
+            for x in data:
+                iprint(d, f'Parsing list[{len(x)}]')
+                self.parse_node(x, parent, d+1)
+            return
+
+        # What type of AST node is this?
+        for x,y in data.items():
+            # Should we create a node for this?
+            if x in [DEFMODULE, DEFCOMPONENT]:
+                iprint(d, f'Parsing {x}...')
+                node = self.create_node(x, parent)
+                print(f'Created node: {node}\n\t{node.ancestors()}') # Debug
+                if parent:
+                    parent.add_child(node)
+                self.parse_node(y, node, d+1)
+                return
+            elif x in [DATA]:
+                for z in y:
+                    # Data might be just a string 
+                    if isinstance(y[z], str):
+                        self.register_key(z, parent)
+                        self.register_value(y[z], parent)
+                        iprint(d, f'Added property: \u001b[34m{parent.properties[-1]}\u001b[0m to {parent}')
+                        continue
+                    self.parse_node(y[z], parent, d+1)
+                return
+            else:
+                # Case 1: We don't have any children, in this case we are the value.
+                if not y:
+                    iprint(d, f'Oops, value: {x, self.lastNode}.')
+                    self.register_key(self.lastNode, parent)
+                    self.register_value(x, parent)
+                    iprint(d, f'Added property: \u001b[34m{parent.properties[-1]}\u001b[0m to {parent}')
+                    return
+                
+                # Are we itterable?
+                if isinstance(y, list):
+                    iprint(d, f'Parsing list[{len(y)}]')
+                    for z in y:
+                        self.parse_node(z, parent, d+1)
+                    return
+
+                # Are we a dictionary?
+                if isinstance(y, dict):
+                    iprint(d, f'Parsing dictionary[{len(y)}] : {x}')
+                    self.lastNode = x
+                    self.parse_node(y, parent, d+1)
+                    return
+                
+                # We must be a key
+                self.register_key(x, parent)
+                self.parse_node(y, parent, d+1)
+
+        
     def print_ast(self):
         '''
         Print the AST.

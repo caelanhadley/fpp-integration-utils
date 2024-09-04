@@ -220,57 +220,58 @@ class VisitedSymbolSet:
 
 # =============================== CODE FOR AST PARSER IMPLEMENTATION ================================= #
 
+
 class ASTNode:
     '''
     Represents a node in the Abstract Syntax Tree (AST)
+    Serves as the base class for all AST nodes
     '''
-    def __init__(self, id="", name="", description="", type="", kind="", size="", priority="", queueBehavior="", parent=None):
-        self.id = id
-        self.name = name
-        self.description = description
+    # Contstructor
+    def __init__(self, parent=None, type=None, description=None):
         self.children = []
         self.parent = parent
         self.type = type
-        self.kind = kind
-        self.size = size
-        self.priority = priority
-        self.queueBehavior = queueBehavior
-        self.line = None
-        self.column = None
-        self.src_file = None
+        self.properties = []
+        self.description = description # Also serves as comment for now
+    # Methods
     def add_child(self, child):
         self.children.append(child)
-    def __str__(self):
-        result = f"[{self.id}] {self.name}"
-        last_prop = None
-        if self.description:
-            result += f"\u001b[2m ({self.description})\u001b[0m"
-        if self.type and self.type != "None":
-            last_prop = f"type: {self.type}"
-        if self.kind and self.kind != "None":
-            if last_prop: result += "\n\t\u2523\u2501 " + last_prop
-            last_prop = f"kind: {self.kind}"
-        if self.size and self.size != "None":
-            if last_prop: result += "\n\t\u2523\u2501 " + last_prop
-            last_prop = f"size: {self.size}"
-        if self.priority and self.priority != "None":
-            if last_prop: result += "\n\t\u2523\u2501 " + last_prop
-            last_prop = f"priority: {self.priority}"
-        if self.queueBehavior and self.queueBehavior != "None":
-            if last_prop: result += "\n\t\u2523\u2501 " + last_prop
-            last_prop = f"queue behvaior: {self.queueBehavior}"
-        if self.line and self.column:
-            if last_prop: result += "\n\t\u2523\u2501 " + last_prop
-            last_prop = f"line: {self.line}, column: {self.column}"
-        if self.src_file:
-            if last_prop: result += "\n\t\u2523\u2501 " + last_prop
-            last_prop = f"src: {self.src_file}"
-        if last_prop: result += "\n\t\u2517\u2501 " + last_prop
-        result += "\u001b[0m"
+    def add_property(self, property):
+        self.properties.append(property)
+    def __str__(self) -> str:
+        result = f"\u001b[32mASTNode\u001b[0m<\u001b[34m{self.type}\u001b[0m>"
+        # for prop in self.properties:
+        #     result += f"\n\t{prop}"
+        # for child in self.children:
+        #     result += f"\n\t{child}"
         return result
+    def ancestors(self):
+        '''
+        The name of ancestors of the current node, including the current node
+        '''
+        result = ""
+        current = self
+        while current.parent:
+            result += str(current.parent) + " -> "
+            current = current.parent
+        result += str(self)
+        return result
+        
+
+class Property(ASTNode):
+    '''
+    FPP Property Object
+    Used to represent any key-value pair in the AST
+    '''
+    def __init__(self, key, value, parent=None, description=None):
+        super().__init__(parent, description)
+        self.key = key
+        self.value = value
+    def __str__(self):
+        return f"\u001b[32mProperty\u001b[0m<\u001b[34m{self.key}\u001b[0m: \u001b[33m{self.value}\u001b[0m>"
     def __repr__(self):
-        return self.__str__()
-    
+        self.__str__()
+
 class Component(ASTNode):
     '''
     FPP Component Object

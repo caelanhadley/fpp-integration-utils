@@ -16,5 +16,4 @@ __pycache__/
 .idea/
 
 # Dependency directories
-lib/
 bin/

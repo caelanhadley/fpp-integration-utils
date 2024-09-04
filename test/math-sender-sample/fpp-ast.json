@@ -1,0 +1,847 @@
+[
+  {
+    "members" : [
+      [
+        [
+        ],
+        {
+          "DefModule" : {
+            "node" : {
+              "AstNode" : {
+                "data" : {
+                  "name" : "MathModule",
+                  "members" : [
+                    [
+                      [
+                        "Component for sending a math operation"
+                      ],
+                      {
+                        "DefComponent" : {
+                          "node" : {
+                            "AstNode" : {
+                              "data" : {
+                                "kind" : {
+                                  "Active" : {
+                                    
+                                  }
+                                },
+                                "name" : "MathSender",
+                                "members" : [
+                                  [
+                                    [
+                                      "Port for sending the operation request"
+                                    ],
+                                    {
+                                      "SpecPortInstance" : {
+                                        "node" : {
+                                          "AstNode" : {
+                                            "data" : {
+                                              "General" : {
+                                                "kind" : {
+                                                  "Output" : {
+                                                    
+                                                  }
+                                                },
+                                                "name" : "mathOpOut",
+                                                "size" : "None",
+                                                "port" : {
+                                                  "Some" : {
+                                                    "AstNode" : {
+                                                      "data" : {
+                                                        "Unqualified" : {
+                                                          "name" : "OpRequest"
+                                                        }
+                                                      },
+                                                      "id" : 555
+                                                    }
+                                                  }
+                                                },
+                                                "priority" : "None",
+                                                "queueFull" : "None"
+                                              }
+                                            },
+                                            "id" : 556
+                                          }
+                                        }
+                                      }
+                                    },
+                                    [
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Port for receiving the result"
+                                    ],
+                                    {
+                                      "SpecPortInstance" : {
+                                        "node" : {
+                                          "AstNode" : {
+                                            "data" : {
+                                              "General" : {
+                                                "kind" : {
+                                                  "AsyncInput" : {
+                                                    
+                                                  }
+                                                },
+                                                "name" : "mathResultIn",
+                                                "size" : "None",
+                                                "port" : {
+                                                  "Some" : {
+                                                    "AstNode" : {
+                                                      "data" : {
+                                                        "Unqualified" : {
+                                                          "name" : "MathResult"
+                                                        }
+                                                      },
+                                                      "id" : 558
+                                                    }
+                                                  }
+                                                },
+                                                "priority" : "None",
+                                                "queueFull" : "None"
+                                              }
+                                            },
+                                            "id" : 559
+                                          }
+                                        }
+                                      }
+                                    },
+                                    [
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Command receive port"
+                                    ],
+                                    {
+                                      "SpecPortInstance" : {
+                                        "node" : {
+                                          "AstNode" : {
+                                            "data" : {
+                                              "Special" : {
+                                                "inputKind" : "None",
+                                                "kind" : {
+                                                  "CommandRecv" : {
+                                                    
+                                                  }
+                                                },
+                                                "name" : "cmdIn",
+                                                "priority" : "None",
+                                                "queueFull" : "None"
+                                              }
+                                            },
+                                            "id" : 560
+                                          }
+                                        }
+                                      }
+                                    },
+                                    [
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Command registration port"
+                                    ],
+                                    {
+                                      "SpecPortInstance" : {
+                                        "node" : {
+                                          "AstNode" : {
+                                            "data" : {
+                                              "Special" : {
+                                                "inputKind" : "None",
+                                                "kind" : {
+                                                  "CommandReg" : {
+                                                    
+                                                  }
+                                                },
+                                                "name" : "cmdRegOut",
+                                                "priority" : "None",
+                                                "queueFull" : "None"
+                                              }
+                                            },
+                                            "id" : 561
+                                          }
+                                        }
+                                      }
+                                    },
+                                    [
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Command response port"
+                                    ],
+                                    {
+                                      "SpecPortInstance" : {
+                                        "node" : {
+                                          "AstNode" : {
+                                            "data" : {
+                                              "Special" : {
+                                                "inputKind" : "None",
+                                                "kind" : {
+                                                  "CommandResp" : {
+                                                    
+                                                  }
+                                                },
+                                                "name" : "cmdResponseOut",
+                                                "priority" : "None",
+                                                "queueFull" : "None"
+                                              }
+                                            },
+                                            "id" : 562
+                                          }
+                                        }
+                                      }
+                                    },
+                                    [
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Event port"
+                                    ],
+                                    {
+                                      "SpecPortInstance" : {
+                                        "node" : {
+                                          "AstNode" : {
+                                            "data" : {
+                                              "Special" : {
+                                                "inputKind" : "None",
+                                                "kind" : {
+                                                  "Event" : {
+                                                    
+                                                  }
+                                                },
+                                                "name" : "eventOut",
+                                                "priority" : "None",
+                                                "queueFull" : "None"
+                                              }
+                                            },
+                                            "id" : 563
+                                          }
+                                        }
+                                      }
+                                    },
+                                    [
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Telemetry port"
+                                    ],
+                                    {
+                                      "SpecPortInstance" : {
+                                        "node" : {
+                                          "AstNode" : {
+                                            "data" : {
+                                              "Special" : {
+                                                "inputKind" : "None",
+                                                "kind" : {
+                                                  "Telemetry" : {
+                                                    
+                                                  }
+                                                },
+                                                "name" : "tlmOut",
+                                                "priority" : "None",
+                                                "queueFull" : "None"
+                                              }
+                                            },
+                                            "id" : 564
+                                          }
+                                        }
+                                      }
+                                    },
+                                    [
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Text event port"
+                                    ],
+                                    {
+                                      "SpecPortInstance" : {
+                                        "node" : {
+                                          "AstNode" : {
+                                            "data" : {
+                                              "Special" : {
+                                                "inputKind" : "None",
+                                                "kind" : {
+                                                  "TextEvent" : {
+                                                    
+                                                  }
+                                                },
+                                                "name" : "textEventOut",
+                                                "priority" : "None",
+                                                "queueFull" : "None"
+                                              }
+                                            },
+                                            "id" : 565
+                                          }
+                                        }
+                                      }
+                                    },
+                                    [
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Time get port"
+                                    ],
+                                    {
+                                      "SpecPortInstance" : {
+                                        "node" : {
+                                          "AstNode" : {
+                                            "data" : {
+                                              "Special" : {
+                                                "inputKind" : "None",
+                                                "kind" : {
+                                                  "TimeGet" : {
+                                                    
+                                                  }
+                                                },
+                                                "name" : "timeGetOut",
+                                                "priority" : "None",
+                                                "queueFull" : "None"
+                                              }
+                                            },
+                                            "id" : 566
+                                          }
+                                        }
+                                      }
+                                    },
+                                    [
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Do a math operation"
+                                    ],
+                                    {
+                                      "SpecCommand" : {
+                                        "node" : {
+                                          "AstNode" : {
+                                            "data" : {
+                                              "kind" : {
+                                                "Async" : {
+                                                  
+                                                }
+                                              },
+                                              "name" : "DO_MATH",
+                                              "params" : [
+                                                [
+                                                  [
+                                                  ],
+                                                  {
+                                                    "AstNode" : {
+                                                      "data" : {
+                                                        "kind" : {
+                                                          "Value" : {
+                                                            
+                                                          }
+                                                        },
+                                                        "name" : "val1",
+                                                        "typeName" : {
+                                                          "AstNode" : {
+                                                            "data" : {
+                                                              "TypeNameFloat" : {
+                                                                "name" : {
+                                                                  "F32" : {
+                                                                    
+                                                                  }
+                                                                }
+                                                              }
+                                                            },
+                                                            "id" : 569
+                                                          }
+                                                        }
+                                                      },
+                                                      "id" : 570
+                                                    }
+                                                  },
+                                                  [
+                                                    "The first operand"
+                                                  ]
+                                                ],
+                                                [
+                                                  [
+                                                  ],
+                                                  {
+                                                    "AstNode" : {
+                                                      "data" : {
+                                                        "kind" : {
+                                                          "Value" : {
+                                                            
+                                                          }
+                                                        },
+                                                        "name" : "op",
+                                                        "typeName" : {
+                                                          "AstNode" : {
+                                                            "data" : {
+                                                              "TypeNameQualIdent" : {
+                                                                "name" : {
+                                                                  "AstNode" : {
+                                                                    "data" : {
+                                                                      "Unqualified" : {
+                                                                        "name" : "MathOp"
+                                                                      }
+                                                                    },
+                                                                    "id" : 576
+                                                                  }
+                                                                }
+                                                              }
+                                                            },
+                                                            "id" : 577
+                                                          }
+                                                        }
+                                                      },
+                                                      "id" : 578
+                                                    }
+                                                  },
+                                                  [
+                                                    "The operation"
+                                                  ]
+                                                ],
+                                                [
+                                                  [
+                                                  ],
+                                                  {
+                                                    "AstNode" : {
+                                                      "data" : {
+                                                        "kind" : {
+                                                          "Value" : {
+                                                            
+                                                          }
+                                                        },
+                                                        "name" : "val2",
+                                                        "typeName" : {
+                                                          "AstNode" : {
+                                                            "data" : {
+                                                              "TypeNameFloat" : {
+                                                                "name" : {
+                                                                  "F32" : {
+                                                                    
+                                                                  }
+                                                                }
+                                                              }
+                                                            },
+                                                            "id" : 581
+                                                          }
+                                                        }
+                                                      },
+                                                      "id" : 582
+                                                    }
+                                                  },
+                                                  [
+                                                    "The second operand"
+                                                  ]
+                                                ]
+                                              ],
+                                              "opcode" : "None",
+                                              "priority" : "None",
+                                              "queueFull" : "None"
+                                            },
+                                            "id" : 583
+                                          }
+                                        }
+                                      }
+                                    },
+                                    [
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Math command received"
+                                    ],
+                                    {
+                                      "SpecEvent" : {
+                                        "node" : {
+                                          "AstNode" : {
+                                            "data" : {
+                                              "name" : "COMMAND_RECV",
+                                              "params" : [
+                                                [
+                                                  [
+                                                  ],
+                                                  {
+                                                    "AstNode" : {
+                                                      "data" : {
+                                                        "kind" : {
+                                                          "Value" : {
+                                                            
+                                                          }
+                                                        },
+                                                        "name" : "val1",
+                                                        "typeName" : {
+                                                          "AstNode" : {
+                                                            "data" : {
+                                                              "TypeNameFloat" : {
+                                                                "name" : {
+                                                                  "F32" : {
+                                                                    
+                                                                  }
+                                                                }
+                                                              }
+                                                            },
+                                                            "id" : 586
+                                                          }
+                                                        }
+                                                      },
+                                                      "id" : 587
+                                                    }
+                                                  },
+                                                  [
+                                                    "The first operand"
+                                                  ]
+                                                ],
+                                                [
+                                                  [
+                                                  ],
+                                                  {
+                                                    "AstNode" : {
+                                                      "data" : {
+                                                        "kind" : {
+                                                          "Value" : {
+                                                            
+                                                          }
+                                                        },
+                                                        "name" : "op",
+                                                        "typeName" : {
+                                                          "AstNode" : {
+                                                            "data" : {
+                                                              "TypeNameQualIdent" : {
+                                                                "name" : {
+                                                                  "AstNode" : {
+                                                                    "data" : {
+                                                                      "Unqualified" : {
+                                                                        "name" : "MathOp"
+                                                                      }
+                                                                    },
+                                                                    "id" : 593
+                                                                  }
+                                                                }
+                                                              }
+                                                            },
+                                                            "id" : 594
+                                                          }
+                                                        }
+                                                      },
+                                                      "id" : 595
+                                                    }
+                                                  },
+                                                  [
+                                                    "The operation"
+                                                  ]
+                                                ],
+                                                [
+                                                  [
+                                                  ],
+                                                  {
+                                                    "AstNode" : {
+                                                      "data" : {
+                                                        "kind" : {
+                                                          "Value" : {
+                                                            
+                                                          }
+                                                        },
+                                                        "name" : "val2",
+                                                        "typeName" : {
+                                                          "AstNode" : {
+                                                            "data" : {
+                                                              "TypeNameFloat" : {
+                                                                "name" : {
+                                                                  "F32" : {
+                                                                    
+                                                                  }
+                                                                }
+                                                              }
+                                                            },
+                                                            "id" : 598
+                                                          }
+                                                        }
+                                                      },
+                                                      "id" : 599
+                                                    }
+                                                  },
+                                                  [
+                                                    "The second operand"
+                                                  ]
+                                                ]
+                                              ],
+                                              "severity" : {
+                                                "ActivityLow" : {
+                                                  
+                                                }
+                                              },
+                                              "id" : "None",
+                                              "format" : {
+                                                "AstNode" : {
+                                                  "data" : "Math command received: {f} {} {f}",
+                                                  "id" : 600
+                                                }
+                                              },
+                                              "throttle" : "None"
+                                            },
+                                            "id" : 601
+                                          }
+                                        }
+                                      }
+                                    },
+                                    [
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Received math result"
+                                    ],
+                                    {
+                                      "SpecEvent" : {
+                                        "node" : {
+                                          "AstNode" : {
+                                            "data" : {
+                                              "name" : "RESULT",
+                                              "params" : [
+                                                [
+                                                  [
+                                                  ],
+                                                  {
+                                                    "AstNode" : {
+                                                      "data" : {
+                                                        "kind" : {
+                                                          "Value" : {
+                                                            
+                                                          }
+                                                        },
+                                                        "name" : "result",
+                                                        "typeName" : {
+                                                          "AstNode" : {
+                                                            "data" : {
+                                                              "TypeNameFloat" : {
+                                                                "name" : {
+                                                                  "F32" : {
+                                                                    
+                                                                  }
+                                                                }
+                                                              }
+                                                            },
+                                                            "id" : 604
+                                                          }
+                                                        }
+                                                      },
+                                                      "id" : 605
+                                                    }
+                                                  },
+                                                  [
+                                                    "The math result"
+                                                  ]
+                                                ]
+                                              ],
+                                              "severity" : {
+                                                "ActivityHigh" : {
+                                                  
+                                                }
+                                              },
+                                              "id" : "None",
+                                              "format" : {
+                                                "AstNode" : {
+                                                  "data" : "Math result is {f}",
+                                                  "id" : 606
+                                                }
+                                              },
+                                              "throttle" : "None"
+                                            },
+                                            "id" : 607
+                                          }
+                                        }
+                                      }
+                                    },
+                                    [
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "The first value"
+                                    ],
+                                    {
+                                      "SpecTlmChannel" : {
+                                        "node" : {
+                                          "AstNode" : {
+                                            "data" : {
+                                              "name" : "VAL1",
+                                              "typeName" : {
+                                                "AstNode" : {
+                                                  "data" : {
+                                                    "TypeNameFloat" : {
+                                                      "name" : {
+                                                        "F32" : {
+                                                          
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  "id" : 608
+                                                }
+                                              },
+                                              "id" : "None",
+                                              "update" : "None",
+                                              "format" : "None",
+                                              "low" : [
+                                              ],
+                                              "high" : [
+                                              ]
+                                            },
+                                            "id" : 609
+                                          }
+                                        }
+                                      }
+                                    },
+                                    [
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "The operation"
+                                    ],
+                                    {
+                                      "SpecTlmChannel" : {
+                                        "node" : {
+                                          "AstNode" : {
+                                            "data" : {
+                                              "name" : "OP",
+                                              "typeName" : {
+                                                "AstNode" : {
+                                                  "data" : {
+                                                    "TypeNameQualIdent" : {
+                                                      "name" : {
+                                                        "AstNode" : {
+                                                          "data" : {
+                                                            "Unqualified" : {
+                                                              "name" : "MathOp"
+                                                            }
+                                                          },
+                                                          "id" : 611
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  "id" : 612
+                                                }
+                                              },
+                                              "id" : "None",
+                                              "update" : "None",
+                                              "format" : "None",
+                                              "low" : [
+                                              ],
+                                              "high" : [
+                                              ]
+                                            },
+                                            "id" : 613
+                                          }
+                                        }
+                                      }
+                                    },
+                                    [
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "The second value"
+                                    ],
+                                    {
+                                      "SpecTlmChannel" : {
+                                        "node" : {
+                                          "AstNode" : {
+                                            "data" : {
+                                              "name" : "VAL2",
+                                              "typeName" : {
+                                                "AstNode" : {
+                                                  "data" : {
+                                                    "TypeNameFloat" : {
+                                                      "name" : {
+                                                        "F32" : {
+                                                          
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  "id" : 614
+                                                }
+                                              },
+                                              "id" : "None",
+                                              "update" : "None",
+                                              "format" : "None",
+                                              "low" : [
+                                              ],
+                                              "high" : [
+                                              ]
+                                            },
+                                            "id" : 615
+                                          }
+                                        }
+                                      }
+                                    },
+                                    [
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "The result"
+                                    ],
+                                    {
+                                      "SpecTlmChannel" : {
+                                        "node" : {
+                                          "AstNode" : {
+                                            "data" : {
+                                              "name" : "RESULT",
+                                              "typeName" : {
+                                                "AstNode" : {
+                                                  "data" : {
+                                                    "TypeNameFloat" : {
+                                                      "name" : {
+                                                        "F32" : {
+                                                          
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  "id" : 620
+                                                }
+                                              },
+                                              "id" : "None",
+                                              "update" : "None",
+                                              "format" : "None",
+                                              "low" : [
+                                              ],
+                                              "high" : [
+                                              ]
+                                            },
+                                            "id" : 621
+                                          }
+                                        }
+                                      }
+                                    },
+                                    [
+                                    ]
+                                  ]
+                                ]
+                              },
+                              "id" : 622
+                            }
+                          }
+                        }
+                      },
+                      [
+                      ]
+                    ]
+                  ]
+                },
+                "id" : 623
+              }
+            }
+          }
+        },
+        [
+        ]
+      ]
+    ]
+  }
+]

@@ -240,15 +240,100 @@ class ASTNode:
         self.properties.append(property)
     def __str__(self) -> str:
         result = f"\u001b[32mASTNode\u001b[0m<\u001b[34m{self.type}\u001b[0m>"
-        # for prop in self.properties:
-        #     result += f"\n\t{prop}"
-        # for child in self.children:
-        #     result += f"\n\t{child}"
         return result
+    def __repr__(self) -> str:
+        return self.__str__()
+    def rprint(self, depth=0, array=None):
+        '''
+        Print the full AST starting from the current node
+        '''
+        # Header
+        result = ""
+        if depth == 0:
+            result += "\u2514" + "\u2500\u252c\u2500" + str(self) + "\n"
+        else:
+            if array == True:
+                result += ("  " * (depth + 1)) + "\u251c"
+            else:
+                result += ("  " * (depth + 1)) + "\u2514"
+            result += "\u2500\u252c\u2500" + str(self) + "\n"
+            depth += 1
+        if self.description:
+            if array == True:
+                result += (("  " * (depth)) + "\u2502 ") + "\u251c" + "\u2500\u2500\u2500" + f"\u001b[32mDescription\u001b[0m: \"\u001b[36m{self.description}\u001b[0m\"\n"
+            else:
+                result +=  ("  " * (depth + 1)) + "\u251c" + "\u2500\u2500\u2500" + f"\u001b[32mDescription\u001b[0m: \"\u001b[36m{self.description}\u001b[0m\"\n"
+
+        # Properties
+        if array == True:
+            result += ("  " * (depth)) + "\u2502 "
+        else:
+            result += ("  " * (depth + 1))
+        if not self.children:
+            result += "\u2514"
+        else:
+            result += "\u251c"
+        result += "\u2500\u252c\u2500" + "\u001b[32mProperties\u001b[0m:\n"
+        for prop in self.properties:
+            if array == True:
+                result += ("  " * (depth)) + "\u2502 "
+            else:
+                result += ("  " * (depth + 1))
+            # Check if there are children
+            if self.children:
+                result += "\u2502 "
+            else:
+                result += "  "
+            # Check if this is the last property
+            if prop == self.properties[-1]:
+                result += "\u2514"
+            else:
+                result += "\u2502"
+            # Print the property
+            result += "\u2500" * 3 + str(prop) + "\n"
+
+        # Chlidren
+        if self.children:
+            result += ("  " * (depth + 1)) + "\u2514" + "\u2500\u252c\u2500" + "\u001b[32mChildren\u001b[0m:\n"
+            for child in self.children:
+                result +=  child.rprint(depth+1, array=(child != self.children[-1]))
+        return result
+
+    def fprint(self):
+        '''
+        Print the full AST starting from the current node
+        '''
+        # Header
+        result = '\u250c' + "\u2500\u2500\u2500" + str(self) + "\n"
+        if self.description:
+            result += "\u251c" + "\u2500\u2500\u2500" + f"\u001b[32mDescription\u001b[0m: \"\u001b[36m{self.description}\u001b[0m\"\n"
+        # Properties
+        result += "\u251c" + "\u2500\u252c\u2500" + "\u001b[32mProperties\u001b[0m:\n"
+        for prop in self.properties:
+            result += "\u2502 "
+            if prop == self.properties[-1]:
+                result += "\u2514"
+            else:
+                result += "\u2502"
+            result += "\u2500" * 3 + str(prop) + "\n"
+        # Chlidren
+        if  self.children:
+            result += "\u251c" + "\u2500\u2500\u252c" + "\u001b[32mChildren\u001b[0m:\n"
+            for child in self.children:
+                result += "\u2502  "
+                if child == self.children[-1]:
+                    result += "\u2514"
+                else:
+                    result += "\u2502"
+                result += "\u2500" * 3 + str(child) + "\n"
+        return result
+        
     def ancestors(self):
         '''
         The name of ancestors of the current node, including the current node
         '''
+        if not self.parent:
+            return "No ancestors"
         result = ""
         current = self
         while current.parent:

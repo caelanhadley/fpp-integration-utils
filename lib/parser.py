@@ -12,6 +12,7 @@ class Parser:
         self.map = None
         self.ast = None # root node of the AST
         self.lastNode = None
+        self.lastObject = None
         self.commentBuffer = None
         self.propertyBuffer = None
 
@@ -58,9 +59,13 @@ class Parser:
             iprint(depth, f'Created node: {new_node}   [{new_node.ancestors()}]') # Debug
             if new_node.description:
                 iprint(depth, f'Added comment: "\u001b[36m{new_node.description}\u001b[0m" to {new_node}')
+            self.lastObject = new_node
         return new_node
+    
     def create_property(self, key, value, parent:ASTNode=None):
-        return Property(key, value, parent)
+        new_property = Property(key, value, parent)
+        self.lastObject = new_property
+        return new_property
     
     # Buffer Management
     def register_key(self, key: str, parent:ASTNode=None):
@@ -150,6 +155,14 @@ class Parser:
                     self.register_value(x, parent)
                     iprint(d, f'Added property(c): \u001b[34m{parent.properties[-1]}\u001b[0m to {parent}')
                     return
+                
+                # Are we an ASTNODE?
+                if x == ASTNODE:
+                    for z in y:
+                        if z == ID:
+                            if self.lastObject:
+                                self.lastObject.identifier = y[z]
+                                iprint(d, f'Added ID: {y[z]} to {self.lastObject}')
                 
                 # Are we itterable?
                 if isinstance(y, list):

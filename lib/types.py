@@ -233,13 +233,14 @@ class ASTNode:
         self.type = type
         self.properties = []
         self.description = description # Also serves as comment for now
+        self.identifier = None
     # Methods
     def add_child(self, child):
         self.children.append(child)
     def add_property(self, property):
         self.properties.append(property)
     def __str__(self) -> str:
-        result = f"\u001b[32mASTNode\u001b[0m<\u001b[34m{self.type}\u001b[0m>"
+        result = f"\u001b[32mASTNode[{self.identifier}]\u001b[0m<\u001b[34m{self.type}\u001b[0m>"
         return result
     def __repr__(self) -> str:
         return self.__str__()
@@ -353,7 +354,9 @@ class Property(ASTNode):
         self.key = key
         self.value = value
     def __str__(self):
-        return f"\u001b[32mProperty\u001b[0m<\u001b[34m{self.key}\u001b[0m: \u001b[33m{self.value}\u001b[0m>"
+        if self.identifier:
+            return f"\u001b[32mProperty[{'{:4d}'.format(int(self.identifier))}] \u001b[0m<\u001b[34m{self.key}\u001b[0m: \u001b[33m{self.value}\u001b[0m>"
+        return f"\u001b[32mProperty[{'{:4}'.format('')}] \u001b[0m<\u001b[34m{self.key}\u001b[0m: \u001b[33m{self.value}\u001b[0m>"
     def __repr__(self):
         self.__str__()
 

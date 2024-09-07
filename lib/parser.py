@@ -120,7 +120,7 @@ class Parser:
         # What type of AST node is this?
         for x,y in data.items():
             # Should we create a node for this?
-            if x in [DEFMODULE, DEFCOMPONENT, SPECPORT, SPECEVENT, SPECTELEMETRY]: ################################## Add more types here like port spec etc.
+            if x in [DEFMODULE, DEFCOMPONENT, SPECPORT, SPECEVENT, SPECTELEMETRY]:
                 # iprint(d, f'Parsing {x}...')
                 node = self.create_node(x, parent, d)
                 if parent:
@@ -135,7 +135,6 @@ class Parser:
                     self.register_value(y, parent)
                     iprint(d, f'Added property(b0): \u001b[34m{parent.properties[-1]}\u001b[0m to {parent}')
                     return
-                
                 # If here, This must be a dictionary
                 for z in y:
                     # Data might be just a string 
@@ -162,6 +161,11 @@ class Parser:
                         if z == ID:
                             if self.lastObject:
                                 self.lastObject.identifier = y[z]
+                                # Is it in the self.map?
+                                for key in self.map:
+                                    if str(y[z]) == str(key):
+                                        l,c = self.map[key].get('pos').split('.')
+                                        self.lastObject.position = Position(l,c)
                                 iprint(d, f'Added ID: {y[z]} to {self.lastObject}')
                 
                 # Are we itterable?

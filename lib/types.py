@@ -216,8 +216,19 @@ class VisitedSymbolSet:
     def __str__(self):
         return ""
     
-
-
+# =============================== UTILITY ================================= #
+class Position:
+    '''
+    Represents a position in the source code
+    '''
+    def __init__(self, line, column):
+        self.line = line
+        self.column = column
+    def __str__(self):
+        return f"({self.line},{self.column})"
+    def __repr__(self):
+        return self.__str__()
+    
 # =============================== CODE FOR AST PARSER IMPLEMENTATION ================================= #
 
 
@@ -234,6 +245,7 @@ class ASTNode:
         self.properties = []
         self.description = description # Also serves as comment for now
         self.identifier = None
+        self.position = None
     # Methods
     def add_child(self, child):
         self.children.append(child)
@@ -264,34 +276,39 @@ class ASTNode:
                 result += (("  " * (depth)) + "\u2502 ") + "\u251c" + "\u2500\u2500\u2500" + f"\u001b[32mDescription\u001b[0m: \"\u001b[36m{self.description}\u001b[0m\"\n"
             else:
                 result +=  ("  " * (depth + 1)) + "\u251c" + "\u2500\u2500\u2500" + f"\u001b[32mDescription\u001b[0m: \"\u001b[36m{self.description}\u001b[0m\"\n"
-
+        if self.position:
+            if array == True:
+                result += (("  " * (depth)) + "\u2502 ") + "\u251c" + "\u2500\u2500\u2500" + f"\u001b[32mPosition\u001b[0m: {self.position}\n"
+            else:
+                result +=  ("  " * (depth + 1)) + "\u251c" + "\u2500\u2500\u2500" + f"\u001b[32mPosition\u001b[0m: {self.position}\n"
+        if self.properties:
         # Properties
-        if array == True:
-            result += ("  " * (depth)) + "\u2502 "
-        else:
-            result += ("  " * (depth + 1))
-        if not self.children:
-            result += "\u2514"
-        else:
-            result += "\u251c"
-        result += "\u2500\u252c\u2500" + "\u001b[32mProperties\u001b[0m:\n"
-        for prop in self.properties:
             if array == True:
                 result += ("  " * (depth)) + "\u2502 "
             else:
                 result += ("  " * (depth + 1))
-            # Check if there are children
-            if self.children:
-                result += "\u2502 "
-            else:
-                result += "  "
-            # Check if this is the last property
-            if prop == self.properties[-1]:
+            if not self.children:
                 result += "\u2514"
             else:
-                result += "\u2502"
-            # Print the property
-            result += "\u2500" * 3 + str(prop) + "\n"
+                result += "\u251c"
+            result += "\u2500\u252c\u2500" + "\u001b[32mProperties\u001b[0m:\n"
+            for prop in self.properties:
+                if array == True:
+                    result += ("  " * (depth)) + "\u2502 "
+                else:
+                    result += ("  " * (depth + 1))
+                # Check if there are children
+                if self.children:
+                    result += "\u2502 "
+                else:
+                    result += "  "
+                # Check if this is the last property
+                if prop == self.properties[-1]:
+                    result += "\u2514"
+                else:
+                    result += "\u2502"
+                # Print the property
+                result += "\u2500" * 3 + str(prop) + "\n"
 
         # Chlidren
         if self.children:
@@ -354,9 +371,14 @@ class Property(ASTNode):
         self.key = key
         self.value = value
     def __str__(self):
+        result = ""
         if self.identifier:
-            return f"\u001b[32mProperty[{'{:4d}'.format(int(self.identifier))}] \u001b[0m<\u001b[34m{self.key}\u001b[0m: \u001b[33m{self.value}\u001b[0m>"
-        return f"\u001b[32mProperty[{'{:4}'.format('')}] \u001b[0m<\u001b[34m{self.key}\u001b[0m: \u001b[33m{self.value}\u001b[0m>"
+            result += f"\u001b[32mProperty[{'{:4d}'.format(int(self.identifier))}] \u001b[0m<\u001b[34m{self.key}\u001b[0m: \u001b[33m{self.value}\u001b[0m>"
+        else:
+            result += f"\u001b[32mProperty[{'{:4}'.format('')}] \u001b[0m<\u001b[34m{self.key}\u001b[0m: \u001b[33m{self.value}\u001b[0m>"
+        if self.position:
+            result += f" @ {self.position}"
+        return result
     def __repr__(self):
         self.__str__()
 

@@ -239,10 +239,12 @@ class ASTNode:
     '''
     # Contstructor
     def __init__(self, parent=None, type=None, description=None):
+        self.data  = []
+
         self.children = []
+        self.properties = []
         self.parent = parent
         self.type = type
-        self.properties = []
         self.description = description # Also serves as comment for now
         self.identifier = None
         self.position = None
@@ -306,7 +308,7 @@ class ASTNode:
                 if prop == self.properties[-1]:
                     result += "\u2514"
                 else:
-                    result += "\u2502"
+                    result += "\u251c"
                 # Print the property
                 result += "\u2500" * 3 + str(prop) + "\n"
 
@@ -373,9 +375,9 @@ class Property(ASTNode):
     def __str__(self):
         result = ""
         if self.identifier:
-            result += f"\u001b[32mProperty[{'{:4d}'.format(int(self.identifier))}] \u001b[0m<\u001b[34m{self.key}\u001b[0m: \u001b[33m{self.value}\u001b[0m>"
+            result += f"\u001b[32mProperty \u001b[0m<\u001b[34m{self.key}\u001b[0m: \u001b[33m{self.value}\u001b[0m>"
         else:
-            result += f"\u001b[32mProperty[{'{:4}'.format('')}] \u001b[0m<\u001b[34m{self.key}\u001b[0m: \u001b[33m{self.value}\u001b[0m>"
+            result += f"\u001b[32mProperty \u001b[0m<\u001b[34m{self.key}\u001b[0m: \u001b[33m{self.value}\u001b[0m>"
         if self.position:
             result += f" @ {self.position}"
         return result

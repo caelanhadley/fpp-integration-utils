@@ -1,18 +1,22 @@
 from json import load as jload
+from time import sleep
 from lib.util import file_exists, iprint
 from lib.types import *
 from lib.enum import *
+import os
 
 class Parser:
     '''
     A parser for AST data.
     '''
     def __init__(self):
-        self.raw = None # json data from which to compose the ads
+        self.raw = None # json data from which to compose the ast
         self.map = None
         self.ast = None # root node of the AST
         self.lastNode = None
         self.lastObject = None
+        self.lastElement = None
+        self.lastType = None
         self.commentBuffer = None
         self.propertyBuffer = None
 
@@ -32,9 +36,7 @@ class Parser:
         self.raw = self.load(path)
         self.map = self.load(map)
         self.parse_node(self.raw[0], self.ast)
-        print('=======================================================================================================================')
-        # self.print_node(self.ast)
-        print(self.ast.rprint())
+        self.ast.rprint()
     
     def _get_comment(self):
         if self.commentBuffer:
@@ -50,13 +52,20 @@ class Parser:
             return result
         return None
     
+    def _get_last_type(self):
+        if self.lastType:
+            result = self.lastType
+            self.lastType = None
+            return result
+        return None
+    
     def create_node(self, type, parent:ASTNode=None, depth=0):
         new_node = ASTNode(parent, type, self._get_comment())
         if not self.ast:
             self.ast = new_node
             iprint(depth, f'Created root node: {new_node}') # Could it be possible for the root node to have a comment?
         else:
-            iprint(depth, f'Created node: {new_node}   [{new_node.ancestors()}]') # Debug
+            iprint(depth, f'Created node: {new_node}') # Debug
             if new_node.description:
                 iprint(depth, f'Added comment: "\u001b[36m{new_node.description}\u001b[0m" to {new_node}')
             self.lastObject = new_node
@@ -80,113 +89,135 @@ class Parser:
             exit(1)
     def register_comment(self, comment):
         self.commentBuffer = comment
+    def register_type(self, type):
+        self.lastType = type
 
     def parse_node(self, data, parent:ASTNode=None, d=0):
-        '''
-        Recursively parse a node and its children.
-        '''
-        # Did we get any data?
-        if not data:
-            # iprint(d, 'No data found.')
-            return
+        # For debugging purposes
+        if (self.ast):
+            os.system('clear')
+            print(self.ast.rprint())
+        sleep(0.01)
 
-        # Is this a string?
-        # Let's keep this seperate from the integers because we want to capture comments.
-        if isinstance(data, str):
-            if self.propertyBuffer:
-                if not self.propertyBuffer.value and self.lastNode:
-                    self.register_value(data, parent)
-                    iprint(d, f'Added property(a0): \u001b[34m{parent.properties[-1]}\u001b[0m to {parent}')
-                else:
-                    self.register_value(data, parent)
-                    iprint(d, f'Added property(a1): \u001b[34m{data}\u001b[0m to {parent}')
-            else:
-                self.register_comment(data)
-                # iprint(d, f'Added comment: "\u001b[36m{data}\u001b[0m" to the buffer.')
+        # Is the data empty?
+        if not data:
             return
         
-        # Is this an integer?
-        if isinstance(data, int):
-            iprint(d, f'Found Integer: {data}')
+        # If the data is a string, we should add it as a property/comment
+        if isinstance(data, str):
+            if parent:
+                if self.lastElement:
+                    self.register_key(self.lastElement, parent)
+                    self.register_value(data, parent)
+                    iprint(d, f'Added property(a1): \u001b[34m{parent.properties[-1]}\u001b[0m to {parent}')
+                    self.lastElement = None
+                    return
+                else:
+                    # This is a comment
+                    print('\u001b[36m' + data + '\u001b[0m')
+                    self.register_comment(data)
+                    return
+            iprint(d, f'Found string: {data}')
             return
-
-        # Is this a list? If so lets go ahead and parse each element.
+        self.lastElement = None
+        if isinstance(data, int):
+            iprint(d, f'Found integer: {data}')
+            return
         if isinstance(data, list):
             for x in data:
-                # iprint(d, f'Parsing list[{len(x)}]')
+                print('Element:', x)
                 self.parse_node(x, parent, d+1)
             return
-
-        # What type of AST node is this?
         for x,y in data.items():
-            # Should we create a node for this?
-            if x in [DEFMODULE, DEFCOMPONENT, SPECPORT, SPECEVENT, SPECTELEMETRY]:
-                # iprint(d, f'Parsing {x}...')
-                node = self.create_node(x, parent, d)
+            print('DICT:', x)
+            if x in [DEFMODULE, DEFCOMPONENT, SPECPORT, SPECEVENT, SPECTELEMETRY, SPECCOMMAND, PORT]:
+                print(f"FOUND {x}")
+                # lets register our type and continue
+                self.register_type(x)
+            # If we are an ASTNODE, we should create a new node.
+            if x == ASTNODE:
+                # First lets make a new node
+                new_node = self.create_node(self._get_last_type(), parent, d)
                 if parent:
-                    parent.add_child(node)
-                self.parse_node(y, node, d+1)
-                return
-            elif x in [DATA]:
-                # The data itself can contain a string or a dictionary
-                # Lets check for a string first
-                if isinstance(y, str):
-                    self.register_key(x, parent)
-                    self.register_value(y, parent)
-                    iprint(d, f'Added property(b0): \u001b[34m{parent.properties[-1]}\u001b[0m to {parent}')
-                    return
-                # If here, This must be a dictionary
-                for z in y:
-                    # Data might be just a string 
-                    if isinstance(y[z], str):
-                        self.register_key(z, parent)
-                        self.register_value(y[z], parent)
-                        iprint(d, f'Added property(b1): \u001b[34m{parent.properties[-1]}\u001b[0m to {parent}')
+                    parent.add_child(new_node)
+                self.lastNode = new_node
+                # Now lets parse the contents of this node.
+                for xx in y:
+                    print('Element:', xx)
+                    if xx == ID:
+                        iprint(d, f'ID: {y[xx]}')
+                        new_node.identifier = y[xx]
                         continue
-                    self.lastNode = z
-                    self.parse_node(y[z], parent, d+1)
-                return
-            else:
-                # Case 1: We don't have any children, in this case we are the value.
-                if not y:
-                    # iprint(d, f'Oops, value: {x, self.lastNode}.')
-                    self.register_key(self.lastNode, parent)
-                    self.register_value(x, parent)
-                    iprint(d, f'Added property(c): \u001b[34m{parent.properties[-1]}\u001b[0m to {parent}')
-                    return
-                
-                # Are we an ASTNODE?
-                if x == ASTNODE:
-                    for z in y:
-                        if z == ID:
-                            if self.lastObject:
-                                self.lastObject.identifier = y[z]
-                                # Is it in the self.map?
-                                for key in self.map:
-                                    if str(y[z]) == str(key):
-                                        l,c = self.map[key].get('pos').split('.')
-                                        self.lastObject.position = Position(l,c)
-                                iprint(d, f'Added ID: {y[z]} to {self.lastObject}')
-                
-                # Are we itterable?
-                if isinstance(y, list):
-                    # iprint(d, f'Parsing list[{len(y)}]')
-                    for z in y:
-                        self.parse_node(z, parent, d+1)
-                    return
+                    # If our child is a string, we should add it as a property
+                    if isinstance(y[xx], str):
+                        new_node.add_property(Property(xx, y[xx]))
+                        iprint(d, f'Added property: {new_node.properties[-1]} to {new_node}')
+                        continue
+                    # This is DATA which will have who knows what but everything in it should point to us
+                    elif xx == DATA:
+                       iprint(d, f'Parsing DATA {y[xx]}...')
+                       for datum in y[xx]:
+                            # Datum is the key, y[xx][datum] is the value
+                            key = datum
+                            value = y[xx][datum]
+                            iprint(d, f'Parsing k:{key}, v:{value}...')
 
-                # Are we a dictionary?
-                if isinstance(y, dict):
-                    # iprint(d, f'Parsing dictionary[{len(y)}] : {x}')
-                    self.lastNode = x
-                    self.parse_node(y, parent, d+1)
+                            # There are some exceptional tags that we need to handle
+                            if key == GENERAL:
+                                for zz in value:
+                                    iprint(d, f'Parsing[GENERAL] {zz}...')
+                                    self.register_type(zz)
+                                    self.lastElement = zz
+                                    self.parse_node(value[zz], new_node, d+1)
+                                continue
+                            if key == KIND:
+                                for zz in value:
+                                    self.register_key(KIND, new_node)
+                                    self.register_value(zz, new_node)
+                                continue
+                            
+                            
+                            # If the value is a string, we should add it as a property and thats all
+                            if isinstance(value, str):
+                                new_node.add_property(Property(key, value))
+                                iprint(d, f'Added property: {new_node.properties[-1]} to {new_node}')
+                                continue
+                            # If the value is a dictionary
+                            if isinstance(value, dict):
+                                iprint(d, f'Parsing[DICT] {value} ')
+                                # We need to parse its conents but we also need to temporarily store the key just in case it is a string
+                                for zz in value:
+                                    self.lastElement = zz
+                                    self.parse_node(value[zz], new_node, d+1)
+                                continue
+                            # If the value is a list
+                            if isinstance(value, list):
+                                # Seperate the list into its elements
+                                for element in value:
+                                    print('Element:')  
+                                    self.parse_node(element, new_node, d+1)
+                                continue
+                            print('Error: Unhandled data type.')
+                continue
+            elif x == MEMBERS:
+                for xx in y:
+                    iprint(d, f'Parsing member {str(xx)[:50]}...')
+                    self.parse_node(xx, parent, d+1)
+                continue
+            # If our only chhild is a string, we should add it as a property
+            elif isinstance(y, str):
+                if parent:
+                    parent.add_property(Property(x, y))
+                    iprint(d, f'Added property: {parent.properties[-1]} to {parent}')
                     return
-                
-                # We must be a key
-                self.register_key(x, parent)
-                self.parse_node(y, parent, d+1)
+                else:
+                    iprint(d, f'Found string: {y}')
+                    return
+            self.parse_node(y, parent, d+1)
+            
+        # iprint(d, f'Parsing {x}...')
 
-    def print_node(self, node:ASTNode, d=0):
+    def print_node(self, node: ASTNode, d=0):
         '''
         Print a node and its children.
         '''

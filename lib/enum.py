@@ -21,6 +21,7 @@ DEFPORT = 'DefPort'
 SPECPORT = 'SpecPortInstance'
 SPECEVENT = "SpecEvent"
 SPECTELEMETRY = "SpecTlmChannel" # Telemetry Channel Spec
+SPECCOMMAND = "SpecCommand" # Command Spec
 ENUM = 'DefEnum'
 SPECIAL = 'Special'
 ASYNCINPUT = 'AsyncInput'
